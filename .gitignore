@@ -1,0 +1,6 @@
+# User-specific config (contains project paths and custom rules)
+skills/*/config.json
+
+# OS files
+.DS_Store
+Thumbs.db

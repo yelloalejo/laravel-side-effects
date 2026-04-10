@@ -1,0 +1,61 @@
+{
+  "project": {
+    "name": "Mi Proyecto Laravel",
+    "path": "~/ruta/al/proyecto",
+    "framework": "laravel"
+  },
+  "directories": {
+    "models": "app/Models",
+    "observers": "app/Observers",
+    "events": "app/Events",
+    "listeners": "app/Listeners",
+    "resources": "app/Http/Resources",
+    "requests": "app/Http/Requests",
+    "controllers": "app/Http/Controllers",
+    "jobs": "app/Jobs",
+    "notifications": "app/Notifications",
+    "policies": "app/Policies",
+    "middleware": "app/Http/Middleware",
+    "providers": "app/Providers",
+    "migrations": "database/migrations",
+    "factories": "database/factories",
+    "seeders": "database/seeders",
+    "routes": "routes",
+    "config": "config"
+  },
+  "criticalModels": [
+    {
+      "model": "User",
+      "reason": "Modelo base de autenticacion. Cambios afectan login, permisos y sesiones.",
+      "relatedResources": ["UserResource"],
+      "relatedObservers": ["UserObserver"]
+    }
+  ],
+  "criticalTables": [
+    {
+      "table": "users",
+      "reason": "Tabla principal de autenticacion.",
+      "safetyLevel": "critical"
+    }
+  ],
+  "customRules": [
+    {
+      "name": "Revisar calculos financieros",
+      "when": "Se modifica cualquier modelo o servicio que maneje montos, comisiones o transacciones",
+      "check": "Verificar precision decimal, redondeo, y que no se alteren formulas existentes",
+      "severity": "critical"
+    }
+  ],
+  "ignorePaths": [
+    "tests/",
+    "storage/",
+    "bootstrap/cache/"
+  ],
+  "notifications": {
+    "warnOnNewSave": true,
+    "warnOnRelationChange": true,
+    "warnOnMigrationWithoutDown": true,
+    "warnOnFillableChange": true,
+    "warnOnCastChange": true
+  }
+}
