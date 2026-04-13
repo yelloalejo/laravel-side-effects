@@ -1,0 +1,162 @@
+{
+  "project": {
+    "name": "OnePay Backend",
+    "path": "~/Documents/onepay",
+    "framework": "laravel"
+  },
+  "directories": {
+    "models": "app/Models",
+    "observers": "app/Observers",
+    "events": "app/Events",
+    "listeners": "app/Listeners",
+    "resources": "app/Http/Resources",
+    "requests": "app/Http/Requests",
+    "controllers": "app/Http/Controllers",
+    "jobs": "app/Jobs",
+    "notifications": "app/Notifications",
+    "policies": "app/Policies",
+    "middleware": "app/Http/Middleware",
+    "providers": "app/Providers",
+    "migrations": "database/migrations",
+    "factories": "database/factories",
+    "seeders": "database/seeders",
+    "routes": "routes",
+    "config": "config"
+  },
+  "criticalModels": [
+    {
+      "model": "Customer",
+      "reason": "Clientes de la plataforma. Cambios afectan facturacion, cobros y relaciones con pagos.",
+      "relatedResources": ["GuestJsonResource"],
+      "relatedObservers": ["CustomerObserver"]
+    },
+    {
+      "model": "Guest",
+      "reason": "Pagadores invitados sin cuenta. Cambios afectan el flujo de pago publico.",
+      "relatedResources": ["GuestJsonResource"],
+      "relatedObservers": []
+    },
+    {
+      "model": "Charge",
+      "reason": "Cobros generados. Nucleo del flujo de recaudo. Cambios afectan pagos, splits y webhooks.",
+      "relatedResources": ["ChargeJsonResource", "ChargeResource"],
+      "relatedObservers": ["ChargeObserver"]
+    },
+    {
+      "model": "BankingInstruction",
+      "reason": "Instrucciones bancarias para pagos. Cambios afectan procesamiento de transferencias.",
+      "relatedResources": [],
+      "relatedObservers": ["BankingInstructionObserver"]
+    },
+    {
+      "model": "Cashout",
+      "reason": "Dispersiones de dinero. Errores pueden generar pagos duplicados o faltantes.",
+      "relatedResources": [],
+      "relatedObservers": []
+    },
+    {
+      "model": "CashoutLine",
+      "reason": "Lineas individuales de dispersion. Cada linea es una transferencia real a una cuenta bancaria.",
+      "relatedResources": ["CashoutLineResource"],
+      "relatedObservers": ["CashoutLineObserver"]
+    },
+    {
+      "model": "Transaction",
+      "reason": "Nucleo financiero. Cambios afectan cobros, recaudos y dispersiones.",
+      "relatedResources": ["TransactionJsonResource"],
+      "relatedObservers": []
+    },
+    {
+      "model": "Payment",
+      "reason": "Pagos procesados. Cambios afectan el flujo de dinero real.",
+      "relatedResources": ["PaymentJsonResource", "PaymentResource"],
+      "relatedObservers": ["PaymentObserver"]
+    },
+    {
+      "model": "Wallet",
+      "reason": "Balance de usuarios. Errores causan descuadre financiero.",
+      "relatedResources": [],
+      "relatedObservers": []
+    }
+  ],
+  "criticalTables": [
+    {
+      "table": "customers",
+      "reason": "Clientes de la plataforma. Relaciones con cobros y pagos.",
+      "safetyLevel": "high"
+    },
+    {
+      "table": "guests",
+      "reason": "Pagadores invitados. Flujo de pago publico.",
+      "safetyLevel": "high"
+    },
+    {
+      "table": "charges",
+      "reason": "Cobros generados. Nucleo del flujo de recaudo.",
+      "safetyLevel": "critical"
+    },
+    {
+      "table": "banking_instructions",
+      "reason": "Instrucciones bancarias para procesamiento de transferencias.",
+      "safetyLevel": "critical"
+    },
+    {
+      "table": "cashouts",
+      "reason": "Dispersiones de dinero a cuentas bancarias.",
+      "safetyLevel": "critical"
+    },
+    {
+      "table": "cashout_lines",
+      "reason": "Lineas individuales de dispersion. Cada linea es una transferencia real.",
+      "safetyLevel": "critical"
+    },
+    {
+      "table": "transactions",
+      "reason": "Registro de todas las transacciones financieras.",
+      "safetyLevel": "critical"
+    },
+    {
+      "table": "payments",
+      "reason": "Pagos procesados contra pasarelas.",
+      "safetyLevel": "critical"
+    },
+    {
+      "table": "wallets",
+      "reason": "Balances de usuarios. Cualquier inconsistencia es perdida financiera.",
+      "safetyLevel": "critical"
+    }
+  ],
+  "customRules": [
+    {
+      "name": "Calculos financieros",
+      "when": "Se modifica cualquier modelo, servicio o job que maneje montos, comisiones, IVA, o movimientos de wallet",
+      "check": "Verificar precision decimal (usar bcmath o integers en centavos), redondeo, y que no se alteren formulas de comision existentes",
+      "severity": "critical"
+    },
+    {
+      "name": "Webhooks de pasarela",
+      "when": "Se modifica el procesamiento de webhooks de pagos (controladores o listeners de eventos de pago)",
+      "check": "Verificar idempotencia, manejo de reintentos, y que no se procese un pago dos veces",
+      "severity": "critical"
+    },
+    {
+      "name": "Integraciones externas",
+      "when": "Se modifica la comunicacion con APIs externas (pasarelas de pago, bancos, servicios de terceros)",
+      "check": "Verificar timeouts, retry logic, manejo de errores, y que no se envien requests duplicados",
+      "severity": "high"
+    }
+  ],
+  "ignorePaths": [
+    "tests/",
+    "storage/",
+    "bootstrap/cache/",
+    "public/"
+  ],
+  "notifications": {
+    "warnOnNewSave": true,
+    "warnOnRelationChange": true,
+    "warnOnMigrationWithoutDown": true,
+    "warnOnFillableChange": true,
+    "warnOnCastChange": true
+  }
+}
