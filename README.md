@@ -45,18 +45,6 @@ After installing, create your project-specific config:
 cp config.example.json config.json
 ```
 
-### Team Configs
-
-Pre-built configs are available for specific projects. Copy the one that matches yours:
-
-| Project | File | Command |
-|---------|------|---------|
-| **OnePay** | `config.onepay.json` | `cp config.onepay.json config.json` |
-
-> To add your team's config, create a `config.{team}.json` and submit a PR.
-
-### Config Fields
-
 Edit `config.json` with your project's details:
 
 | Field | Description |
